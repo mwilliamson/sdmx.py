@@ -1,14 +1,15 @@
 import io
-import collections
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 
-from xml.etree.cElementTree import parse as _parse_xml
-
-from .xmlcommon import inner_text
+from .xmlcommon import inner_text, parse_xml
 from . import dsd
 
 
 def reader(fileobj, requests=None):
-    tree = _parse_xml(fileobj)
+    tree = parse_xml(fileobj)
     dsd_fetcher = DsdFetcher(requests)
     return DatasetsReader(tree, dsd_fetcher=dsd_fetcher)
 
@@ -130,7 +131,7 @@ class SeriesReader(object):
         ])
         key_value_elements = self._element.findall(key_value_path)
         
-        return collections.OrderedDict(
+        return OrderedDict(
             self._key_family.describe_value(element.get("concept"), element.get("value"), lang=lang)
             for element in key_value_elements
         )

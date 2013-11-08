@@ -1,10 +1,10 @@
-from xml.etree.cElementTree import parse as _parse_xml
+import sys
 
-from .xmlcommon import inner_text
+from .xmlcommon import inner_text, parse_xml
 
 
 def reader(fileobj):
-    tree = _parse_xml(fileobj)
+    tree = parse_xml(fileobj)
     return DsdReader(tree)
     
 
