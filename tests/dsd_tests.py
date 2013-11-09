@@ -7,7 +7,7 @@ import sdmx
 
 @istest
 def concepts_are_detected_when_contained_in_concept_scheme():
-    dsd_file = io.BytesIO("""<?xml version="1.0" encoding="UTF-8"?>
+    dsd_file = io.BytesIO(b"""<?xml version="1.0" encoding="UTF-8"?>
 <Structure xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:structure="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure">
 <Concepts>
 <structure:ConceptScheme>
@@ -25,7 +25,7 @@ def concepts_are_detected_when_contained_in_concept_scheme():
 
 @istest
 def concepts_are_detected_when_contained_directly_in_concepts_element():
-    dsd_file = io.BytesIO("""<?xml version="1.0" encoding="UTF-8"?>
+    dsd_file = io.BytesIO(b"""<?xml version="1.0" encoding="UTF-8"?>
 <Structure xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:structure="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure">
     <Concepts>
         <structure:Concept id="itm_newa">
@@ -41,7 +41,7 @@ def concepts_are_detected_when_contained_directly_in_concepts_element():
 
 @istest
 def concepts_are_indexed_by_id():
-    dsd_file = io.BytesIO("""<?xml version="1.0" encoding="UTF-8"?>
+    dsd_file = io.BytesIO(b"""<?xml version="1.0" encoding="UTF-8"?>
 <Structure xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:structure="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure">
     <Concepts>
         <structure:Concept id="itm_newa">
@@ -57,7 +57,7 @@ def concepts_are_indexed_by_id():
 
 @istest
 def concept_names_are_read_by_language():
-    dsd_file = io.BytesIO("""<?xml version="1.0" encoding="UTF-8"?>
+    dsd_file = io.BytesIO(b"""<?xml version="1.0" encoding="UTF-8"?>
 <Structure xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:structure="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure">
 <Concepts>
 <structure:ConceptScheme>
@@ -76,7 +76,7 @@ def concept_names_are_read_by_language():
 
 @istest
 def code_lists_are_read_with_ids_and_names():
-    dsd_file = io.BytesIO("""<?xml version="1.0" encoding="UTF-8"?>
+    dsd_file = io.BytesIO(b"""<?xml version="1.0" encoding="UTF-8"?>
 <Structure xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:structure="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure">
     <CodeLists>
         <structure:CodeList id="CL_ITM_NEWA" agencyID="EUROSTAT" isFinal="true">
@@ -95,7 +95,7 @@ def code_lists_are_read_with_ids_and_names():
 
 @istest
 def code_lists_are_indexed_by_id():
-    dsd_file = io.BytesIO("""<?xml version="1.0" encoding="UTF-8"?>
+    dsd_file = io.BytesIO(b"""<?xml version="1.0" encoding="UTF-8"?>
 <Structure xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:structure="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure">
     <CodeLists>
         <structure:CodeList id="CL_ITM_NEWA" agencyID="EUROSTAT" isFinal="true">
@@ -110,7 +110,7 @@ def code_lists_are_indexed_by_id():
 
 @istest
 def codes_can_be_read_from_code_lists():
-    dsd_file = io.BytesIO("""<?xml version="1.0" encoding="UTF-8"?>
+    dsd_file = io.BytesIO(b"""<?xml version="1.0" encoding="UTF-8"?>
 <Structure xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:structure="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure">
     <CodeLists>
         <structure:CodeList id="CL_ITM_NEWA" agencyID="EUROSTAT" isFinal="true">
@@ -134,7 +134,7 @@ def codes_can_be_read_from_code_lists():
 
 @istest
 def codes_can_have_parents():
-    dsd_file = io.BytesIO("""<?xml version="1.0" encoding="UTF-8"?>
+    dsd_file = io.BytesIO(b"""<?xml version="1.0" encoding="UTF-8"?>
 <Structure xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:structure="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure">
     <CodeLists>
         <structure:CodeList id="CL_ITM_NEWA" agencyID="EUROSTAT" isFinal="true">
@@ -152,7 +152,7 @@ def codes_can_have_parents():
 
 @istest
 def codes_are_indexed_by_value():
-    dsd_file = io.BytesIO("""<?xml version="1.0" encoding="UTF-8"?>
+    dsd_file = io.BytesIO(b"""<?xml version="1.0" encoding="UTF-8"?>
 <Structure xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:structure="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure">
     <CodeLists>
         <structure:CodeList id="CL_ITM_NEWA" agencyID="EUROSTAT" isFinal="true">
@@ -171,7 +171,7 @@ def codes_are_indexed_by_value():
 
 @istest
 def key_families_are_read_with_id_and_name():
-    dsd_file = io.BytesIO("""<?xml version="1.0" encoding="UTF-8"?>
+    dsd_file = io.BytesIO(b"""<?xml version="1.0" encoding="UTF-8"?>
 <Structure xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:structure="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure">
     <KeyFamilies>
         <structure:KeyFamily id="MON20123_2" agencyID="OECD">
@@ -191,7 +191,7 @@ def key_families_are_read_with_id_and_name():
 
 @istest
 def key_family_dimensions_have_concept_and_code_list():
-    dsd_file = io.BytesIO("""<?xml version="1.0" encoding="UTF-8"?>
+    dsd_file = io.BytesIO(b"""<?xml version="1.0" encoding="UTF-8"?>
 <Structure xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:structure="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure">
     <Concepts>
         <structure:Concept id="COUNTRY" agencyID="OECD">
