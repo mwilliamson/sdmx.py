@@ -9,9 +9,43 @@ from . import dsd
 
 
 def reader(fileobj, requests=None):
-    tree = parse_xml(fileobj)
+    tree = XmlNode(parse_xml(fileobj))
     dsd_fetcher = DsdFetcher(requests)
     return DatasetsReader(tree, dsd_fetcher=dsd_fetcher)
+
+
+class XmlNode(object):
+    def __init__(self, node):
+        self._node = node
+        
+    def map_nodes(self, path, func):
+        return map(func, self.findall(path))
+    
+    def find(self, path):
+        return XmlNode(self._node.find(path))
+    
+    def findall(self, path):
+        return map(XmlNode, self._node.findall(path))
+    
+    def get(self, name):
+        return self._node.get(name)
+    
+    def inner_text(self):
+        return inner_text(self._node)
+
+
+class GenericElementTypes(object):
+    def _expand(name):
+        return "{http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic}" + name
+    
+    DataSet = _expand("DataSet")
+    Series = _expand("Series")
+    SeriesKey = _expand("SeriesKey")
+    KeyFamilyRef = _expand("KeyFamilyRef")
+    Obs = _expand("Obs")
+    Value = _expand("Value")
+    Time = _expand("Time")
+    ObsValue = _expand("ObsValue")
 
 
 class DsdFetcher(object):
@@ -39,9 +73,7 @@ class DatasetsReader(object):
         self._dsd_fetcher = dsd_fetcher
     
     def datasets(self):
-        path = "{http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic}DataSet"
-        elements = self._tree.findall(path)
-        return map(self._read_dataset_element, elements)
+        return self._tree.map_nodes(GenericElementTypes.DataSet, self._read_dataset_element)
         
     def _read_dataset_element(self, element):
         return DatasetReader(element, self._dsd_fetcher)
@@ -52,9 +84,8 @@ class DatasetReader(object):
         self._dsd_fetcher = dsd_fetcher
     
     def key_family(self):
-        key_family_ref_path = "{http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic}KeyFamilyRef"
-        key_family_ref_element = self._element.find(key_family_ref_path)
-        ref = inner_text(key_family_ref_element).strip()
+        key_family_ref_element = self._element.find(GenericElementTypes.KeyFamilyRef)
+        ref = key_family_ref_element.inner_text().strip()
         dsd_reader = self._dsd_reader()
         key_families = dict(
             (key_family.id, key_family)
@@ -66,13 +97,11 @@ class DatasetReader(object):
         )
     
     def series(self):
-        path = "{http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic}Series"
-        elements = self._element.findall(path)
         key_family = self.key_family()
-        return [
-            self._read_series_element(key_family, element)
-            for element in elements
-        ]
+        return self._element.map_nodes(
+            GenericElementTypes.Series, 
+            lambda element: self._read_series_element(key_family, element)
+        )
         
     def _dsd_reader(self):
         key_family_uri = self._element.get("keyFamilyURI")
@@ -126,8 +155,8 @@ class SeriesReader(object):
         
     def describe_key(self, lang):
         key_value_path = "/".join([
-            "{http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic}SeriesKey",
-            "{http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic}Value",
+            GenericElementTypes.SeriesKey,
+            GenericElementTypes.Value,
         ])
         key_value_elements = self._element.findall(key_value_path)
         
@@ -137,14 +166,15 @@ class SeriesReader(object):
         )
     
     def observations(self):
-        obs_path = "{http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic}Obs"
-        obs_elements = self._element.findall(obs_path)
-        return map(self._read_obs_element, obs_elements)
+        return self._element.map_nodes(
+            GenericElementTypes.Obs,
+            self._read_obs_element,
+        )
     
     def _read_obs_element(self, obs_element):
-        time_element = obs_element.find("{http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic}Time")
-        value_element = obs_element.find("{http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic}ObsValue")
-        return Observation(inner_text(time_element), value_element.get("value"))
+        time_element = obs_element.find(GenericElementTypes.Time)
+        value_element = obs_element.find(GenericElementTypes.ObsValue)
+        return Observation(time_element.inner_text(), value_element.get("value"))
 
 
 class Observation(object):
