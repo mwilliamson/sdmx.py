@@ -1,3 +1,5 @@
+import functools
+
 from .dataset import data_message_reader, Observation
 
 
@@ -13,10 +15,6 @@ class GenericElementTypes(object):
     Value = _expand("Value")
     Time = _expand("Time")
     ObsValue = _expand("ObsValue")
-
-
-def generic_data_message_reader(fileobj, requests=None):
-    return data_message_reader(GenericDataMessageParser(), fileobj, requests=requests)
 
 
 class GenericDataMessageParser(object):
@@ -57,3 +55,6 @@ class GenericDataMessageParser(object):
         time_element = obs_element.find(GenericElementTypes.Time)
         value_element = obs_element.find(GenericElementTypes.ObsValue)
         return Observation(time_element.inner_text(), value_element.get("value"))
+
+
+generic_data_message_reader = functools.partial(data_message_reader, GenericDataMessageParser())

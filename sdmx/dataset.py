@@ -33,7 +33,7 @@ class Observation(object):
         self.value = value
 
 
-def data_message_reader(parser, fileobj, requests):
+def data_message_reader(parser, fileobj, requests=None, dsd_fileobj=None):
     class DatasetsReader(object):
         def __init__(self, tree, dsd_fetcher):
             self._tree = tree
@@ -69,7 +69,10 @@ def data_message_reader(parser, fileobj, requests):
             
         def _dsd_reader(self):
             key_family_uri = self._element.get("keyFamilyURI")
-            return self._dsd_fetcher.fetch(key_family_uri)
+            if key_family_uri is None:
+                return dsd.reader(fileobj=dsd_fileobj)
+            else:
+                return self._dsd_fetcher.fetch(key_family_uri)
         
         def _read_series_element(self, key_family, element):
             return SeriesReader(key_family, element)

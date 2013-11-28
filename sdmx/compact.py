@@ -1,8 +1,6 @@
+import functools
+
 from .dataset import data_message_reader, Observation
-
-
-def compact_data_message_reader(fileobj, requests=None):
-    return data_message_reader(CompactDataMessageParser(), fileobj, requests=requests)
 
 
 class CompactDataMessageParser(object):
@@ -40,5 +38,6 @@ def _children_with_local_name(parent, local_name):
     for element in parent.children():
         if element.local_name() == local_name:
             yield element
-        
-        
+
+
+compact_data_message_reader = functools.partial(data_message_reader, CompactDataMessageParser())

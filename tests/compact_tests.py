@@ -21,6 +21,33 @@ def dataset_key_family_is_retrieved_from_dsd():
 
 
 @istest
+def key_family_from_passed_dsd_is_used_if_key_family_uri_is_missing():
+    dataset_file = io.BytesIO(
+    b"""<message:CompactData xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:common="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/common" xmlns:compact="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/compact" xmlns:oecd="http://oecd.stat.org/Data" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message http://www.sdmx.org/docs/2_0/SDMXMessage.xsd http://oecd.stat.org/Data http://stats.oecd.org/RestSDMX/sdmx.ashx/GetSchema/MON2012TSE_O" xmlns:message="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message">
+    <oecd:DataSet>
+    </oecd:DataSet>
+</message:CompactData>""")
+    dataset_reader = _reader(dataset_file, dsd_fileobj=_dsd_fileobj())
+    dataset, = dataset_reader.datasets()
+    
+    assert_equal("2012 A) OECD: Estimate of support to agriculture", dataset.key_family().name("en"))
+
+
+@istest
+def dataset_key_family_is_retrieved_from_dsd():
+    dataset_file = io.BytesIO(
+    b"""<message:CompactData xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:common="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/common" xmlns:compact="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/compact" xmlns:oecd="http://oecd.stat.org/Data" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message http://www.sdmx.org/docs/2_0/SDMXMessage.xsd http://oecd.stat.org/Data http://stats.oecd.org/RestSDMX/sdmx.ashx/GetSchema/MON2012TSE_O" xmlns:message="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message">
+    <oecd:DataSet keyFamilyURI="http://stats.oecd.org/RestSDMX/sdmx.ashx/GetKeyFamily/MON2012TSE_O/OECD/?resolveRef=true" xmlns:oecd="http://oecd.stat.org/Data">
+    </oecd:DataSet>
+</message:CompactData>""")
+    dataset_reader = _reader(dataset_file)
+    dataset, = dataset_reader.datasets()
+    
+    assert_equal("2012 A) OECD: Estimate of support to agriculture", dataset.key_family().name("en"))
+    assert_equal(["Country", "Indicator"], dataset.key_family().describe_dimensions("en"))
+
+
+@istest
 def series_key_is_read_using_dsd_concepts_and_code_lists():
     dataset_file = io.BytesIO(
     b"""<message:CompactData xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:common="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/common" xmlns:compact="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/compact" xmlns:oecd="http://oecd.stat.org/Data" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message http://www.sdmx.org/docs/2_0/SDMXMessage.xsd http://oecd.stat.org/Data http://stats.oecd.org/RestSDMX/sdmx.ashx/GetSchema/MON2012TSE_O" xmlns:message="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message">
@@ -62,17 +89,18 @@ def observations_have_time_and_value():
     assert_equal("598184.668422966", second_obs.value)
 
 
-def _reader(dataset_file):
+def _reader(dataset_file, **kwargs):
     context = funk.Context()
     requests = context.mock()
     response = context.mock()
     funk.allows(requests).get("http://stats.oecd.org/RestSDMX/sdmx.ashx/GetKeyFamily/MON2012TSE_O/OECD/?resolveRef=true").returns(response)
     funk.allows(response).iter_content(16 * 1024).returns(_dsd_chunks())
     
-    return sdmx.compact_data_message_reader(fileobj=dataset_file, requests=requests)
+    return sdmx.compact_data_message_reader(fileobj=dataset_file, requests=requests, **kwargs)
 
-def _dsd_chunks():
-    fileobj = io.BytesIO(b"""<?xml version="1.0" encoding="UTF-8"?>
+
+def _dsd_fileobj():
+    return io.BytesIO(b"""<?xml version="1.0" encoding="UTF-8"?>
 <Structure xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:structure="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure">
     <CodeLists>
         <structure:CodeList id="CL_MON2012TSE_O_COUNTRY" agencyID="OECD">
@@ -109,6 +137,9 @@ def _dsd_chunks():
         </structure:KeyFamily>
     </KeyFamilies>
 </Structure>""")
+
+def _dsd_chunks():
+    fileobj = _dsd_fileobj()
     
     buf = []
     while True:
