@@ -1,5 +1,3 @@
-import sys
-
 from .xmlcommon import inner_text, parse_xml
 
 

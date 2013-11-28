@@ -1,11 +1,3 @@
-import io
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
-
-from .xmlcommon import parse_xml, XmlNode
-from . import dsd
 from .dataset import data_message_reader, Observation
 
 

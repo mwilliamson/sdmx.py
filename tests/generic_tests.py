@@ -107,7 +107,7 @@ def _reader(dataset_file):
     funk.allows(requests).get("http://stats.oecd.org/RestSDMX/sdmx.ashx/GetKeyFamily/MON2012TSE_O/OECD/?resolveRef=true").returns(response)
     funk.allows(response).iter_content(16 * 1024).returns(_dsd_chunks())
     
-    return sdmx.dataset_reader(fileobj=dataset_file, requests=requests)
+    return sdmx.generic_data_message_reader(fileobj=dataset_file, requests=requests)
 
 def _dsd_chunks():
     fileobj = io.BytesIO(b"""<?xml version="1.0" encoding="UTF-8"?>
