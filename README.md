@@ -11,10 +11,19 @@ Contributions welcome.
 
 ## Usage
 
-### `sdmx.dataset_reader(fileobj)`
+### `sdmx.generic_data_message_reader(fileobj)`
 
-Given a file-like object, return a reader for XML datasets (not using the compact format).
-The reader has the following attributes:
+Given a file-like object representing the XML of a generic data message,
+return a data message reader.
+
+### `sdmx.compact_data_message_reader(fileobj)`
+
+Given a file-like object representing the XML of a compact data message,
+return a data message reader.
+
+### Data message readers
+
+Each data message reader has the following attributes:
 
 * `datasets()`: returns an iterable of `DatasetReader` instances.
   Each instance corresponds to a `<DataSet>` element.
