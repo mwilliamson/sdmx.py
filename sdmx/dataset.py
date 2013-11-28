@@ -70,6 +70,7 @@ def data_message_reader(parser, fileobj, requests=None, dsd_fileobj=None):
         def _dsd_reader(self):
             key_family_uri = self._element.get("keyFamilyURI")
             if key_family_uri is None:
+                dsd_fileobj.seek(0)
                 return dsd.reader(fileobj=dsd_fileobj)
             else:
                 return self._dsd_fetcher.fetch(key_family_uri)
