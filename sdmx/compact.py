@@ -35,6 +35,7 @@ class CompactDataMessageParser(object):
         )
         
     def _read_obs_element(self, obs_element):
+        # TODO: read appropriate attribute names from key family
         time = obs_element.get("TIME")
         value = obs_element.get("OBS_VALUE")
         return Observation(time, value)
