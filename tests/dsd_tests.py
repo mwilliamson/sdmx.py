@@ -221,3 +221,48 @@ def key_family_dimensions_have_concept_and_code_list():
     assert_equal("CL_MON20123_2_COUNTRY", dimension.code_list_id())
     #~ assert_equal("Country", dimension.concept().name(lang="en"))
     #~ assert_equal("MON20123_2_COUNTRY codelist", dimension.code_list().name(lang="en"))
+
+
+
+@istest
+def time_dimension_can_be_read_from_key_family():
+    dsd_file = io.BytesIO(b"""<?xml version="1.0" encoding="UTF-8"?>
+<Structure xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:structure="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure">
+    <KeyFamilies>
+        <structure:KeyFamily id="MON20123_2" agencyID="OECD">
+            <structure:Name xml:lang="en">2012 F) OECD countries : Consumer Support Estimate by country</structure:Name>
+            <structure:Components>
+                <structure:TimeDimension conceptRef="TIME" codelist="CL_MON2012TSE_O_TIME" />
+            </structure:Components>
+        </structure:KeyFamily>
+    </KeyFamilies>
+</Structure>""")
+    
+    dsd_reader = sdmx.dsd_reader(fileobj=dsd_file)
+    key_family, = dsd_reader.key_families()
+    dimension = key_family.time_dimension()
+    
+    assert_equal("TIME", dimension.concept_ref())
+    assert_equal("CL_MON2012TSE_O_TIME", dimension.code_list_id())
+
+
+
+@istest
+def primary_measure_can_be_read_from_key_family():
+    dsd_file = io.BytesIO(b"""<?xml version="1.0" encoding="UTF-8"?>
+<Structure xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:structure="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure">
+    <KeyFamilies>
+        <structure:KeyFamily id="MON20123_2" agencyID="OECD">
+            <structure:Name xml:lang="en">2012 F) OECD countries : Consumer Support Estimate by country</structure:Name>
+            <structure:Components>
+                <structure:PrimaryMeasure conceptRef="OBS_VALUE"><TextFormat textType="Double" /></structure:PrimaryMeasure>
+            </structure:Components>
+        </structure:KeyFamily>
+    </KeyFamilies>
+</Structure>""")
+    
+    dsd_reader = sdmx.dsd_reader(fileobj=dsd_file)
+    key_family, = dsd_reader.key_families()
+    dimension = key_family.primary_measure()
+    
+    assert_equal("OBS_VALUE", dimension.concept_ref())

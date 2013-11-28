@@ -120,12 +120,25 @@ class KeyFamilyReader(object):
         return _read_name(self._element, lang=lang)
     
     def dimensions(self):
-        path = "/".join([
-            "{http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure}Components",
-            "{http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure}Dimension",
-        ])
+        path = self._dimension_path("Dimension")
         elements = self._element.findall(path)
         return map(self._read_dimension_element, elements)
+
+    def time_dimension(self):
+        path = self._dimension_path("TimeDimension")
+        element = self._element.find(path)
+        return self._read_dimension_element(element)
+        
+    def primary_measure(self):
+        path = self._dimension_path("PrimaryMeasure")
+        element = self._element.find(path)
+        return self._read_dimension_element(element)
+    
+    def _dimension_path(self, name):
+        return "/".join([
+            "{http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure}Components",
+            "{http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure}" + name,
+        ])
 
     def _read_dimension_element(self, element):
         return KeyFamilyDimensionReader(element)

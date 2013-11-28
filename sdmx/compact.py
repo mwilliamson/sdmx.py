@@ -28,20 +28,19 @@ class CompactDataMessageParser(object):
     def series_key(self, series_element):
         return series_element.attributes()
         
-    def read_observations(self, series_element):
+    def read_observations(self, key_family, series_element):
         return map(
-            self._read_obs_element,
+            lambda element: self._read_obs_element(key_family, element),
             _children_with_local_name(series_element, "Obs"),
         )
         
-    def _read_obs_element(self, obs_element):
-        # TODO: read appropriate attribute names from key family
-        time = obs_element.get("TIME")
-        value = obs_element.get("OBS_VALUE")
+    def _read_obs_element(self, key_family, obs_element):
+        time = obs_element.get(key_family.time_dimension().concept_ref())
+        value = obs_element.get(key_family.primary_measure().concept_ref())
         return Observation(time, value)
 
 
-def _children_with_local_name( parent, local_name):
+def _children_with_local_name(parent, local_name):
     # Ignore the namespace since it's dataset dependent
     # The alternative is to use the SDMX converter to convert to a Generic
     # Data Message, but the source code appears to indicate they also ignore

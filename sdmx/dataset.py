@@ -54,7 +54,7 @@ class GenericDataMessageParser(object):
             for element in key_value_elements
         )
         
-    def read_observations(self, series_element):
+    def read_observations(self, key_family, series_element):
         return series_element.map_nodes(
             GenericElementTypes.Obs,
             self._read_obs_element,
@@ -153,6 +153,12 @@ def data_message_reader(parser, fileobj, requests):
                 self._describe_value(dimension, key_lookup[dimension.concept_ref()], lang=lang)
                 for dimension in self._key_family_reader.dimensions()
             )
+            
+        def time_dimension(self):
+            return self._key_family_reader.time_dimension()
+            
+        def primary_measure(self):
+            return self._key_family_reader.primary_measure()
         
         def _describe_value(self, dimension, code_value, lang):
             concept = self._dsd_reader.concept(dimension.concept_ref())
@@ -186,7 +192,7 @@ def data_message_reader(parser, fileobj, requests):
             return self._key_family.describe_key(series_key, lang=lang)
         
         def observations(self):
-            return parser.read_observations(self._element)
+            return parser.read_observations(self._key_family, self._element)
 
     tree = XmlNode(parse_xml(fileobj).getroot())
     dsd_fetcher = DsdFetcher(requests)
