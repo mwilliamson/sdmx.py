@@ -117,7 +117,7 @@ def _dsd_fileobj():
             <structure:Components>
                 <structure:Dimension conceptRef="COUNTRY" codelist="CL_MON2012TSE_O_COUNTRY"/>
                 <structure:Dimension conceptRef="INDIC" codelist="CL_MON2012TSE_O_INDIC"/>
-                <structure:TimeDimension conceptRef="TIME" codelist="CL_MON2012TSE_O_TIME" />
+                <structure:TimeDimension conceptRef="TIME" />
                 <structure:PrimaryMeasure conceptRef="OBS_VALUE"><TextFormat textType="Double" /></structure:PrimaryMeasure>
             </structure:Components>
         </structure:KeyFamily>

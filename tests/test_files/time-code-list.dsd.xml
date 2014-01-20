@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Structure xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:structure="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure">
+    <CodeLists>
+        <structure:CodeList id="TIME_01" agencyID="OECD">
+            <structure:Code value="CL_001">
+                <structure:Description xml:lang="en">1986</structure:Description>
+            </structure:Code>
+            <structure:Code value="CL_002">
+                <structure:Description xml:lang="en">1987</structure:Description>
+            </structure:Code>
+        </structure:CodeList>
+    </CodeLists>
+    <Concepts>
+        <structure:Concept id="COUNTRY">
+            <structure:Name xml:lang="en">Country</structure:Name>
+        </structure:Concept>
+    </Concepts>
+    <KeyFamilies>
+        <structure:KeyFamily id="MON2012TSE_O" agencyID="OECD">
+            <structure:Name xml:lang="en">2012 A) OECD: Estimate of support to agriculture</structure:Name>
+            <structure:Components>
+                <structure:TimeDimension conceptRef="Time" codelist="TIME_01"/>
+            </structure:Components>
+        </structure:KeyFamily>
+        
+    </KeyFamilies>
+</Structure>

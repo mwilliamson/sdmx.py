@@ -4,6 +4,7 @@ from nose.tools import istest, assert_equal
 import funk
 
 import sdmx
+from . import testing
 
 
 @istest
@@ -100,6 +101,19 @@ def observations_have_time_and_value():
     assert_equal("598184.668422966", second_obs.value)
 
 
+@istest
+def time_is_read_from_code_list_if_time_dimension_has_code_dimension():
+    with testing.open("time-code-list.sdmx.xml") as dataset_file:
+        with testing.open("time-code-list.dsd.xml") as dsd_file:
+            dataset_reader = sdmx.generic_data_message_reader(dataset_file, dsd_fileobj=dsd_file)
+            dataset, = dataset_reader.datasets()
+            series, = dataset.series()
+            first_obs, second_obs = series.observations(lang="en")
+            
+            assert_equal("1986", first_obs.time)
+            assert_equal("1987", second_obs.time)
+
+
 def _reader(dataset_file):
     context = funk.Context()
     requests = context.mock()
@@ -141,6 +155,7 @@ def _dsd_chunks():
             <structure:Components>
                 <structure:Dimension conceptRef="COUNTRY" codelist="CL_MON2012TSE_O_COUNTRY"/>
                 <structure:Dimension conceptRef="INDIC" codelist="CL_MON2012TSE_O_INDIC"/>
+                <structure:TimeDimension conceptRef="TIME" />
             </structure:Components>
         </structure:KeyFamily>
     </KeyFamilies>

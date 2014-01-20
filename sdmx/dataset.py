@@ -108,11 +108,11 @@ def data_message_reader(parser, fileobj, requests=None, dsd_fileobj=None):
         
         def _describe_value(self, dimension, code_value, lang):
             concept = self._dsd_reader.concept(dimension.concept_ref())
-            code_list = self._dsd_reader.code_list(dimension.code_list_id())
             
-            return concept.name(lang=lang), self._describe_code(code_list, code_value, lang=lang)
+            return concept.name(lang=lang), self._describe_code(dimension.code_list_id(), code_value, lang=lang)
         
-        def _describe_code(self, code_list, code_value, lang):
+        def _describe_code(self, code_list_id, code_value, lang):
+            code_list = self._dsd_reader.code_list(code_list_id)
             descriptions = []
             while code_value is not None:
                 code = code_list.code(code_value)
@@ -137,8 +137,25 @@ def data_message_reader(parser, fileobj, requests=None, dsd_fileobj=None):
             series_key = parser.series_key(self._element)
             return self._key_family.describe_key(series_key, lang=lang)
         
-        def observations(self):
-            return parser.read_observations(self._key_family, self._element)
+        def observations(self, lang=None):
+            observations = parser.read_observations(self._key_family, self._element)
+            time_dimension = self._key_family.time_dimension()
+            time_code_list_id = time_dimension.code_list_id()
+            if time_code_list_id:
+                def describe_time_code(code):
+                    codes = self._key_family._describe_code(time_code_list_id, code, lang=lang)
+                    if len(codes) > 1:
+                        raise ValueError("Time value has parent, case not handled")
+                    else:
+                        code, = codes
+                        return code
+                
+                return [
+                    Observation(time=describe_time_code(observation.time), value=observation.value)
+                    for observation in observations
+                ]
+            else:
+                return observations
 
     tree = XmlNode(parse_xml(fileobj).getroot())
     dsd_fetcher = DsdFetcher(requests)
