@@ -34,20 +34,6 @@ def key_family_from_passed_dsd_is_used_if_key_family_uri_is_missing():
 
 
 @istest
-def dataset_key_family_is_retrieved_from_dsd():
-    dataset_file = io.BytesIO(
-    b"""<message:CompactData xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:common="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/common" xmlns:compact="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/compact" xmlns:oecd="http://oecd.stat.org/Data" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message http://www.sdmx.org/docs/2_0/SDMXMessage.xsd http://oecd.stat.org/Data http://stats.oecd.org/RestSDMX/sdmx.ashx/GetSchema/MON2012TSE_O" xmlns:message="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message">
-    <oecd:DataSet keyFamilyURI="http://stats.oecd.org/RestSDMX/sdmx.ashx/GetKeyFamily/MON2012TSE_O/OECD/?resolveRef=true" xmlns:oecd="http://oecd.stat.org/Data">
-    </oecd:DataSet>
-</message:CompactData>""")
-    dataset_reader = _reader(dataset_file)
-    dataset, = dataset_reader.datasets()
-    
-    assert_equal("2012 A) OECD: Estimate of support to agriculture", dataset.key_family().name("en"))
-    assert_equal(["Country", "Indicator"], dataset.key_family().describe_dimensions("en"))
-
-
-@istest
 def series_key_is_read_using_dsd_concepts_and_code_lists():
     dataset_file = io.BytesIO(
     b"""<message:CompactData xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:common="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/common" xmlns:compact="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/compact" xmlns:oecd="http://oecd.stat.org/Data" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message http://www.sdmx.org/docs/2_0/SDMXMessage.xsd http://oecd.stat.org/Data http://stats.oecd.org/RestSDMX/sdmx.ashx/GetSchema/MON2012TSE_O" xmlns:message="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message">
