@@ -114,6 +114,20 @@ def time_is_read_from_code_list_if_time_dimension_has_code_dimension():
             assert_equal("1987", second_obs.time)
 
 
+@istest
+def value_error_is_raised_if_observation_time_uses_code_and_language_is_not_specified():
+    with testing.open("time-code-list.sdmx.xml") as dataset_file:
+        with testing.open("time-code-list.dsd.xml") as dsd_file:
+            dataset_reader = sdmx.generic_data_message_reader(dataset_file, dsd_fileobj=dsd_file)
+            dataset, = dataset_reader.datasets()
+            series, = dataset.series()
+            try:
+                series.observations()
+                assert False, "Expected ValueError"
+            except ValueError as error:
+                assert_equal("Observation time uses code list, but language is not specified", str(error))
+
+
 def _reader(dataset_file):
     context = funk.Context()
     requests = context.mock()

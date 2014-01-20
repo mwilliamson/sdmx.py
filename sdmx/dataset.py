@@ -142,6 +142,9 @@ def data_message_reader(parser, fileobj, requests=None, dsd_fileobj=None):
             time_dimension = self._key_family.time_dimension()
             time_code_list_id = time_dimension.code_list_id()
             if time_code_list_id:
+                if not lang:
+                    raise ValueError("Observation time uses code list, but language is not specified")
+                
                 def describe_time_code(code):
                     codes = self._key_family._describe_code(time_code_list_id, code, lang=lang)
                     if len(codes) > 1:
