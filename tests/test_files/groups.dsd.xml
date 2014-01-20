@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Structure xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:structure="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure">
+    <CodeLists>
+        <structure:CodeList id="CL_MON2012TSE_O_COUNTRY" agencyID="OECD">
+            <structure:Code value="OECD-E">
+                <structure:Description xml:lang="en">OECD(EUR million)</structure:Description>
+            </structure:Code>
+        </structure:CodeList>
+        <structure:CodeList id="CL_MON2012TSE_O_INDIC" agencyID="OECD">
+            <structure:Code value="TO-VP">
+                <structure:Description xml:lang="en">Total value of production (at farm gate)</structure:Description>
+            </structure:Code>
+            <structure:Code value="TO-VP1P" parentCode="TO-VP">
+                <structure:Description xml:lang="en">of which: share of MPS commodities, percentage</structure:Description>
+            </structure:Code>
+        </structure:CodeList>
+    </CodeLists>
+    <Concepts>
+        <structure:Concept id="COUNTRY">
+            <structure:Name xml:lang="en">Country</structure:Name>
+        </structure:Concept>
+        <structure:Concept id="INDIC">
+            <structure:Name xml:lang="en">Indicator</structure:Name>
+        </structure:Concept>
+    </Concepts>
+    <KeyFamilies>
+        <structure:KeyFamily id="MON2012TSE_O" agencyID="OECD">
+            <structure:Name xml:lang="en">2012 A) OECD: Estimate of support to agriculture</structure:Name>
+            <structure:Components>
+                <structure:Dimension conceptRef="INDIC" codelist="CL_MON2012TSE_O_INDIC"/>
+                <structure:Dimension conceptRef="COUNTRY" codelist="CL_MON2012TSE_O_COUNTRY"/>
+                <structure:TimeDimension conceptRef="TIME" />
+                <structure:Group id="Segment_487">
+                    <structure:DimensionRef>INDIC</structure:DimensionRef>
+                    <structure:DimensionRef>COUNTRY</structure:DimensionRef>
+                </structure:Group>
+            </structure:Components>
+        </structure:KeyFamily>
+    </KeyFamilies>
+</Structure>

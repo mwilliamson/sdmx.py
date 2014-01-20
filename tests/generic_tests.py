@@ -128,6 +128,23 @@ def value_error_is_raised_if_observation_time_uses_code_and_language_is_not_spec
                 assert_equal("Observation time uses code list, but language is not specified", str(error))
 
 
+@istest
+def key_values_can_be_read_from_group():
+    with testing.open("groups.sdmx.xml") as dataset_file:
+        with testing.open("groups.dsd.xml") as dsd_file:
+            dataset_reader = sdmx.generic_data_message_reader(dataset_file, dsd_fileobj=dsd_file)
+            dataset, = dataset_reader.datasets()
+            series, = dataset.series()
+            
+            assert_equal(
+                [
+                    ("Indicator", ["Total value of production (at farm gate)", "of which: share of MPS commodities, percentage"]),
+                    ("Country", ["OECD(EUR million)"]),
+                ],
+                list(series.describe_key(lang="en").items()),
+            )
+
+
 def _reader(dataset_file):
     context = funk.Context()
     requests = context.mock()

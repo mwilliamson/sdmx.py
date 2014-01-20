@@ -63,7 +63,7 @@ def data_message_reader(parser, fileobj, requests=None, dsd_fileobj=None):
         def series(self):
             key_family = self.key_family()
             return map(
-                lambda element: self._read_series_element(key_family, element),
+                lambda args: self._read_series_element(key_family, *args),
                 parser.get_series_elements(self._element),
             )
             
@@ -75,8 +75,8 @@ def data_message_reader(parser, fileobj, requests=None, dsd_fileobj=None):
             else:
                 return self._dsd_fetcher.fetch(key_family_uri)
         
-        def _read_series_element(self, key_family, element):
-            return SeriesReader(key_family, element)
+        def _read_series_element(self, key_family, element, key):
+            return SeriesReader(key_family, element, key)
 
 
     class KeyFamily(object):
@@ -129,13 +129,13 @@ def data_message_reader(parser, fileobj, requests=None, dsd_fileobj=None):
 
 
     class SeriesReader(object):
-        def __init__(self, key_family, element):
+        def __init__(self, key_family, element, series_key):
             self._key_family = key_family
             self._element = element
+            self._series_key = series_key
             
         def describe_key(self, lang):
-            series_key = parser.series_key(self._element)
-            return self._key_family.describe_key(series_key, lang=lang)
+            return self._key_family.describe_key(self._series_key, lang=lang)
         
         def observations(self, lang=None):
             observations = parser.read_observations(self._key_family, self._element)

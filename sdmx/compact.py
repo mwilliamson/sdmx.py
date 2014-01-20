@@ -13,9 +13,13 @@ class CompactDataMessageParser(object):
         return key_family
     
     def get_series_elements(self, dataset_element):
-        return _children_with_local_name(dataset_element, "Series")
+        return [
+            (element, self._series_key(element))
+            for element in _children_with_local_name(dataset_element, "Series")
+        ]
+            
         
-    def series_key(self, series_element):
+    def _series_key(self, series_element):
         return series_element.attributes()
         
     def read_observations(self, key_family, series_element):

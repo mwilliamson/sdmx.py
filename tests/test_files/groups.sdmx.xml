@@ -1,0 +1,15 @@
+<message:MessageGroup xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic" xmlns:common="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/common" xsi:schemaLocation="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic http://www.sdmx.org/docs/2_0/SDMXGenericData.xsd http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message http://www.sdmx.org/docs/2_0/SDMXMessage.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:message="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message">
+    <DataSet>
+        <KeyFamilyRef>MON2012TSE_O</KeyFamilyRef>
+        <Group type="Segment_487">
+            <GroupKey>
+                <Value concept="INDIC" value="TO-VP1P" />
+            </GroupKey>
+            <Series>
+                <SeriesKey>
+                    <Value concept="COUNTRY" value="OECD-E" />
+                </SeriesKey>
+            </Series>
+        </Group>
+    </DataSet>
+</message:MessageGroup>
