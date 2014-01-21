@@ -103,8 +103,8 @@ def observations_have_time_and_value():
 
 @istest
 def time_is_read_from_code_list_if_time_dimension_has_code_dimension():
-    with testing.open("time-code-list.sdmx.xml") as dataset_file:
-        with testing.open("time-code-list.dsd.xml") as dsd_file:
+    with testing.open("time-code-list.sdmx.xml", "rb") as dataset_file:
+        with testing.open("time-code-list.dsd.xml", "rb") as dsd_file:
             dataset_reader = sdmx.generic_data_message_reader(dataset_file, dsd_fileobj=dsd_file)
             dataset, = dataset_reader.datasets()
             series, = dataset.series()
@@ -116,8 +116,8 @@ def time_is_read_from_code_list_if_time_dimension_has_code_dimension():
 
 @istest
 def value_error_is_raised_if_observation_time_uses_code_and_language_is_not_specified():
-    with testing.open("time-code-list.sdmx.xml") as dataset_file:
-        with testing.open("time-code-list.dsd.xml") as dsd_file:
+    with testing.open("time-code-list.sdmx.xml", "rb") as dataset_file:
+        with testing.open("time-code-list.dsd.xml", "rb") as dsd_file:
             dataset_reader = sdmx.generic_data_message_reader(dataset_file, dsd_fileobj=dsd_file)
             dataset, = dataset_reader.datasets()
             series, = dataset.series()
@@ -130,8 +130,8 @@ def value_error_is_raised_if_observation_time_uses_code_and_language_is_not_spec
 
 @istest
 def key_values_can_be_read_from_group():
-    with testing.open("groups.sdmx.xml") as dataset_file:
-        with testing.open("groups.dsd.xml") as dsd_file:
+    with testing.open("groups.sdmx.xml", "rb") as dataset_file:
+        with testing.open("groups.dsd.xml", "rb") as dsd_file:
             dataset_reader = sdmx.generic_data_message_reader(dataset_file, dsd_fileobj=dsd_file)
             dataset, = dataset_reader.datasets()
             series, = dataset.series()
