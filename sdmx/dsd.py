@@ -106,7 +106,7 @@ class CodeReader(object):
         return _read_description(self._element, lang=lang)
         
     def parent_code_id(self):
-        return self._element.get("parentCode")
+        return self._element.get("parentCode") or None
 
 
 class KeyFamilyReader(object):

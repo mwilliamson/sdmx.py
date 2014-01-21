@@ -151,6 +151,24 @@ def codes_can_have_parents():
 
 
 @istest
+def code_parent_is_treated_as_missing_if_empty_string():
+    dsd_file = io.BytesIO(b"""<?xml version="1.0" encoding="UTF-8"?>
+<Structure xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:structure="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure">
+    <CodeLists>
+        <structure:CodeList id="CL_ITM_NEWA" agencyID="EUROSTAT" isFinal="true">
+            <structure:Code value="40000" parentCode="" />
+        </structure:CodeList>
+    </CodeLists>
+</Structure>""")
+    
+    dsd_reader = sdmx.dsd_reader(fileobj=dsd_file)
+    code_list, = dsd_reader.code_lists()
+    code, = code_list.codes()
+    
+    assert_equal(None, code.parent_code_id())
+
+
+@istest
 def codes_are_indexed_by_value():
     dsd_file = io.BytesIO(b"""<?xml version="1.0" encoding="UTF-8"?>
 <Structure xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:structure="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure">
