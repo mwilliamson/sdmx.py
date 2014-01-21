@@ -23,6 +23,21 @@ def dataset_key_family_is_retrieved_from_dsd():
 
 
 @istest
+def data_can_be_stored_in_generic_data_element():
+    dataset_file = io.BytesIO(
+    b"""<message:genericData xmlns:message="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:generic="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic" xmlns:common="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/common">
+    <message:DataSet keyFamilyURI="http://stats.oecd.org/RestSDMX/sdmx.ashx/GetKeyFamily/MON2012TSE_O/OECD/?resolveRef=true">
+        <generic:KeyFamilyRef>MON2012TSE_O</generic:KeyFamilyRef>
+    </message:DataSet>
+</message:genericData>""")
+    dataset_reader = _reader(dataset_file)
+    dataset, = dataset_reader.datasets()
+    
+    assert_equal("2012 A) OECD: Estimate of support to agriculture", dataset.key_family().name("en"))
+    assert_equal(["Country", "Indicator"], dataset.key_family().describe_dimensions("en"))
+
+
+@istest
 def series_key_is_read_using_dsd_concepts_and_code_lists():
     dataset_file = io.BytesIO(
     b"""<message:MessageGroup xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic" xmlns:common="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/common" xsi:schemaLocation="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic http://www.sdmx.org/docs/2_0/SDMXGenericData.xsd http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message http://www.sdmx.org/docs/2_0/SDMXMessage.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:message="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message">
