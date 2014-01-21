@@ -50,4 +50,8 @@ class XmlNode(object):
 
 
 def inner_text(element):
-    return (element.text or "") + "".join(map(inner_text, element)) + (element.tail or "")
+    return (element.text or "") + "".join(map(_inner_text_and_tail, element))
+
+
+def _inner_text_and_tail(element):
+    return inner_text(element) + (element.tail or "")
