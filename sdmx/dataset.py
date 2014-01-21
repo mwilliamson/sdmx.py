@@ -34,6 +34,11 @@ class Observation(object):
 
 
 def data_message_reader(parser, fileobj, requests=None, dsd_fileobj=None):
+    if dsd_fileobj is None:
+        default_dsd_reader = None
+    else:
+        default_dsd_reader = dsd.reader(fileobj=dsd_fileobj)
+    
     class DatasetsReader(object):
         def __init__(self, tree, dsd_fetcher):
             self._tree = tree
@@ -70,8 +75,7 @@ def data_message_reader(parser, fileobj, requests=None, dsd_fileobj=None):
         def _dsd_reader(self):
             key_family_uri = self._element.get("keyFamilyURI")
             if key_family_uri is None:
-                dsd_fileobj.seek(0)
-                return dsd.reader(fileobj=dsd_fileobj)
+                return default_dsd_reader
             else:
                 return self._dsd_fetcher.fetch(key_family_uri)
         
