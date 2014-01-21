@@ -130,6 +130,19 @@ def time_is_read_from_code_list_if_time_dimension_has_code_dimension():
 
 
 @istest
+def whitespace_is_stripped_before_looking_up_time_code():
+    with testing.open("time-code-list-whitespace.sdmx.xml", "rb") as dataset_file:
+        with testing.open("time-code-list.dsd.xml", "rb") as dsd_file:
+            dataset_reader = sdmx.generic_data_message_reader(dataset_file, dsd_fileobj=dsd_file)
+            dataset, = dataset_reader.datasets()
+            series, = dataset.series()
+            first_obs, second_obs = series.observations(lang="en")
+            
+            assert_equal("1986", first_obs.time)
+            assert_equal("1987", second_obs.time)
+
+
+@istest
 def value_error_is_raised_if_observation_time_uses_code_and_language_is_not_specified():
     with testing.open("time-code-list.sdmx.xml", "rb") as dataset_file:
         with testing.open("time-code-list.dsd.xml", "rb") as dsd_file:

@@ -115,7 +115,7 @@ def data_message_reader(parser, fileobj, requests=None, dsd_fileobj=None):
             code_list = self._dsd_reader.code_list(code_list_id)
             descriptions = []
             while code_value is not None:
-                code = code_list.code(code_value)
+                code = code_list.code(code_value.strip())
                 description = code.description(lang=lang)
                 descriptions.append(description)
                 code_value = code.parent_code_id()
