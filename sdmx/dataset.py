@@ -5,7 +5,7 @@ except ImportError:
     from ordereddict import OrderedDict
 
 from xml.dom import pulldom
-from . import dsd
+from . import dsd, xmlpull
     
 
 class DsdFetcher(object):
@@ -46,9 +46,8 @@ def data_message_reader(parser, fileobj, requests=None, dsd_fileobj=None):
         
         def datasets(self):
             while True:
-                event, node = next(self._event_stream)
-                if event == pulldom.START_ELEMENT and parser.is_dataset_element(node):
-                    yield self._read_dataset_element(node)
+                dataset_node = parser.seek_dataset_node(self._event_stream)
+                yield self._read_dataset_element(dataset_node)
             
         def _read_dataset_element(self, dataset_node):
             key_family = self._key_family(dataset_node)
@@ -80,13 +79,12 @@ def data_message_reader(parser, fileobj, requests=None, dsd_fileobj=None):
         
         def series(self):
             key_family = self.key_family()
-            return map(
-                lambda args: self._read_series_element(key_family, *args),
-                parser.get_series_elements(self._element),
-            )
+            while True:
+                series_node, key = parser.seek_series_node(self._event_stream)
+                yield self._read_series_element(key_family, series_node, key)
         
-        def _read_series_element(self, key_family, element, key):
-            return SeriesReader(key_family, element, key)
+        def _read_series_element(self, key_family, series_node, key):
+            return SeriesReader(key_family, series_node, key)
 
 
     class KeyFamily(object):
@@ -171,4 +169,4 @@ def data_message_reader(parser, fileobj, requests=None, dsd_fileobj=None):
                 return observations
 
     dsd_fetcher = DsdFetcher(requests)
-    return MessageReader(pulldom.parse(fileobj), dsd_fetcher=dsd_fetcher)
+    return MessageReader(xmlpull.EventStream(pulldom.parse(fileobj)), dsd_fetcher=dsd_fetcher)

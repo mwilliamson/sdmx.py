@@ -2,6 +2,7 @@ import functools
 from xml.dom import pulldom
 
 from .dataset import data_message_reader, Observation
+from . import xmlpull
 
 
 class MessageElementTypes(object):
@@ -27,47 +28,50 @@ class GenericElementTypes(object):
     ObsValue = _expand("ObsValue")
 
 
-def _seek_event_stream(stream, desired_event, ignore):
-    while True:
-        event, node = next(stream)
-        if event == desired_event:
-            return event, node
-        elif not event in ignore:
-            raise ValueError("Event {0} before desired event {1}".format(event, desired_event))
-
-def _read_inner_text(stream):
-    text = []
-    level = 1
-    while level > 0:
-        event, node = next(stream)
-        if event == pulldom.START_ELEMENT:
-            level += 1
-        elif event == pulldom.END_ELEMENT:
-            level -= 1
-        elif event == pulldom.CHARACTERS:
-            text.append(node.nodeValue)
-    
-    return "".join(text)
-
-
 class GenericDataMessageParser(object):
-    def is_dataset_element(self, element):
-        # TODO: check namespace
-        return element.localName == "DataSet"
+    def seek_dataset_node(self, event_stream):
+        while True:
+            event, node = next(event_stream)
+            # TODO: check namespace
+            if event == pulldom.START_ELEMENT and node.localName == "DataSet":
+                return node
         
     def key_family_for_dataset(self, event_stream, dataset_node, dsd_reader):
-        event, node = _seek_event_stream(event_stream, pulldom.START_ELEMENT, [pulldom.CHARACTERS])
+        event, node = event_stream.seek(pulldom.START_ELEMENT, [pulldom.CHARACTERS])
         # TODO: check namespace
         assert node.localName == "KeyFamilyRef"
-        ref = _read_inner_text(event_stream).strip()
+        ref = event_stream.inner_text().strip()
         key_families = dict(
             (key_family.id, key_family)
             for key_family in dsd_reader.key_families()
         )
         return key_families[ref]
+        
+    def seek_series_node(self, event_stream):
+        while True:
+            event, node = next(event_stream)
+            # TODO: check namespace
+            if event == pulldom.START_ELEMENT and node.localName == "Series":
+                series_key = self._read_series_key(event_stream)
+                return node, series_key
     
-    def get_series_elements(self, dataset_element):
-        return list(self._get_series_elements_generator(dataset_element))
+    def _read_series_key(self, event_stream):
+        self._seek_series_key(event_stream)
+        key = []
+        while True:
+            event, node = next(event_stream)
+            if event == pulldom.START_ELEMENT and node.localName == "Value":
+                key.append((node.getAttribute("concept"), node.getAttribute("value")))
+            elif event == pulldom.END_ELEMENT and node.localName == "SeriesKey":
+                return key
+    
+    def _seek_series_key(self, event_stream):
+        while True:
+            event, node = next(event_stream)
+            # TODO: check namespace
+            if event == pulldom.START_ELEMENT and node.localName == "SeriesKey":
+                return node
+        
     
     def _get_series_elements_generator(self, dataset_element):
         for child in dataset_element.children():
