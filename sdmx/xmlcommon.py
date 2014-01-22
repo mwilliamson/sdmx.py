@@ -9,6 +9,13 @@ except ImportError:
 __all__ = ["parse_xml", "inner_text", "XmlNode"]
 
 
+def path(*parts):
+    return list(parts)
+
+
+def qualified_name(element_type):
+    return "{%s}%s" % element_type
+
 
 class XmlNode(object):
     def __init__(self, node):
@@ -20,14 +27,14 @@ class XmlNode(object):
         return map(func, self.findall(path))
     
     def find(self, path):
-        child = self._node.find(path)
+        child = self._node.find(_path_to_xpath(path))
         if child is None:
             return None
         else:
             return XmlNode(child)
     
     def findall(self, path):
-        return map(XmlNode, self._node.findall(path))
+        return map(XmlNode, self._node.findall(_path_to_xpath(path)))
     
     def get(self, name):
         return self._node.get(name)
@@ -47,6 +54,13 @@ class XmlNode(object):
     
     def attributes(self):
         return self._node.items()
+    
+
+def _path_to_xpath(path):
+    return "/".join(
+        qualified_name(part)
+        for part in path
+    )
 
 
 def inner_text(element):
