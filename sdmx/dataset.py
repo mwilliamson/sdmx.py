@@ -34,7 +34,7 @@ class Observation(object):
         self.value = value
 
 
-def data_message_reader(parser, fileobj, requests=None, dsd_fileobj=None):
+def data_message_reader(parser, fileobj, lazy=None, requests=None, dsd_fileobj=None):
     if dsd_fileobj is None:
         default_dsd_reader = None
     else:
