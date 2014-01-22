@@ -22,7 +22,7 @@ def dataset_key_family_is_retrieved_from_dsd():
     assert_equal(["Country", "Indicator"], dataset.key_family().describe_dimensions("en"))
 
 
-#~ @istest
+@istest
 def data_can_be_stored_in_generic_data_element():
     dataset_file = io.BytesIO(
     b"""<message:genericData xmlns:message="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" xmlns:generic="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic" xmlns:common="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/common">
