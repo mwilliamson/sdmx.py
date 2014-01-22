@@ -5,7 +5,7 @@ try:
 except ImportError:
     from ordereddict import OrderedDict
 
-from .xmlcommon import parse_xml, XmlNode
+from .xmlcommon import parse_xml, XmlNode, parse_xml_lazy
 from . import dsd
     
 
@@ -41,14 +41,14 @@ def data_message_reader(parser, fileobj, lazy=None, requests=None, dsd_fileobj=N
         default_dsd_reader = dsd.reader(fileobj=dsd_fileobj)
     
     class MessageReader(object):
-        def __init__(self, tree, dsd_fetcher):
-            self._tree = tree
+        def __init__(self, root, dsd_fetcher):
+            self._root = root
             self._dsd_fetcher = dsd_fetcher
         
         def datasets(self):
             return itertools.imap(
                 self._read_dataset_element,
-                parser.get_dataset_elements(self._tree),
+                parser.get_dataset_elements(self._root),
             )
             
         def _read_dataset_element(self, element):
@@ -167,6 +167,10 @@ def data_message_reader(parser, fileobj, lazy=None, requests=None, dsd_fileobj=N
             else:
                 return observations
 
-    tree = XmlNode(parse_xml(fileobj).getroot())
+    if lazy:
+        root = parse_xml_lazy(fileobj)
+    else:
+        root = XmlNode(parse_xml(fileobj).getroot())
+    
     dsd_fetcher = DsdFetcher(requests)
-    return MessageReader(tree, dsd_fetcher=dsd_fetcher)
+    return MessageReader(root, dsd_fetcher=dsd_fetcher)

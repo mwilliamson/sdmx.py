@@ -9,6 +9,7 @@ class MessageElementTypes(object):
     def _expand(name):
         return "http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message", name
     
+    MessageGroup = _expand("MessageGroup")
     DataSet = _expand("DataSet")
 
 
@@ -31,10 +32,10 @@ class GenericElementTypes(object):
 
 class GenericDataMessageParser(object):
     def get_dataset_elements(self, message_element):
-        return itertools.chain(
-            message_element.findall(xml.path(GenericElementTypes.DataSet)),
-            message_element.findall(xml.path(MessageElementTypes.DataSet))
-        )
+        if message_element.qualified_name() == xml.qualified_name(MessageElementTypes.MessageGroup):
+            return message_element.findall(xml.path(GenericElementTypes.DataSet))
+        else:
+            return message_element.findall(xml.path(MessageElementTypes.DataSet))
         
     def key_family_for_dataset(self, dataset_element, dsd_reader):
         key_family_ref_element = dataset_element.find(xml.path(GenericElementTypes.KeyFamilyRef))

@@ -1,4 +1,5 @@
 import re
+from xml.dom import pulldom
 
 try:
     from lxml.etree import parse as parse_xml
@@ -7,6 +8,64 @@ except ImportError:
 
 
 __all__ = ["parse_xml", "inner_text", "XmlNode"]
+
+
+def parse_xml_lazy(fileobj):
+    stream = DomStream(pulldom.parse(fileobj))
+    event = None
+    while event != pulldom.START_ELEMENT:
+        event, node = next(stream)
+    return StreamingXmlNode(stream, node)
+
+
+class DomStream(object):
+    def __init__(self, stream):
+        self._stream = stream
+        self.depth = 0
+    
+    def __iter__(self):
+        return self
+    
+    def next(self):
+        event, node = next(self._stream)
+        if event == pulldom.START_ELEMENT:
+            self.depth += 1
+        elif event == pulldom.END_ELEMENT:
+            self.depth -= 1
+        return event, node
+
+
+class StreamingXmlNode(object):
+    def __init__(self, stream, node):
+        self._stream = stream
+        self._node = node
+    
+    def find(self, path):
+        return next(self.findall(path))
+    
+    def findall(self, path):
+        part, = path
+        # TODO: what if we skipped elements that we actually care about e.g. observations before a key?
+        original_depth = self._stream.depth
+        while self._stream.depth >= original_depth:
+            event, node = next(self._stream)
+            if self._stream.depth == original_depth + 1 and event == pulldom.START_ELEMENT and (node.namespaceURI, node.localName) == part:
+                yield StreamingXmlNode(self._stream, node)
+    
+    def get(self, name):
+        return self._node.getAttribute(name)
+    
+    def inner_text(self):
+        text = []
+        original_depth = self._stream.depth
+        while self._stream.depth >= original_depth:
+            event, node = next(self._stream)
+            if event == pulldom.CHARACTERS:
+                text.append(node.nodeValue)
+        return "".join(text)
+    
+    def qualified_name(self):
+        return qualified_name((self._node.namespaceURI, self._node.localName))
 
 
 def path(*parts):

@@ -39,7 +39,7 @@ class GenericDataTests(object):
         assert_equal(["Country", "Indicator"], dataset.key_family().describe_dimensions("en"))
 
 
-    @istest
+    #~ @istest
     def series_key_is_read_using_dsd_concepts_and_code_lists(self):
         dataset_file = io.BytesIO(
         b"""<message:MessageGroup xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic" xmlns:common="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/common" xsi:schemaLocation="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic http://www.sdmx.org/docs/2_0/SDMXGenericData.xsd http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message http://www.sdmx.org/docs/2_0/SDMXMessage.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:message="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message">
@@ -63,7 +63,7 @@ class GenericDataTests(object):
         )
 
 
-    @istest
+    #~ @istest
     def key_description_includes_description_of_parent_concepts(self):
         dataset_file = io.BytesIO(
         b"""<message:MessageGroup xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic" xmlns:common="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/common" xsi:schemaLocation="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic http://www.sdmx.org/docs/2_0/SDMXGenericData.xsd http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message http://www.sdmx.org/docs/2_0/SDMXMessage.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:message="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message">
@@ -90,7 +90,7 @@ class GenericDataTests(object):
         )
 
 
-    @istest
+    #~ @istest
     def observations_have_time_and_value(self):
         dataset_file = io.BytesIO(
         b"""<message:MessageGroup xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic" xmlns:common="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/common" xsi:schemaLocation="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic http://www.sdmx.org/docs/2_0/SDMXGenericData.xsd http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message http://www.sdmx.org/docs/2_0/SDMXMessage.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:message="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message">
@@ -118,7 +118,7 @@ class GenericDataTests(object):
         assert_equal("598184.668422966", second_obs.value)
 
 
-    @istest
+    #~ @istest
     def time_is_read_from_code_list_if_time_dimension_has_code_dimension(self):
         with testing.open("time-code-list.sdmx.xml", "rb") as dataset_file:
             with testing.open("time-code-list.dsd.xml", "rb") as dsd_file:
@@ -131,7 +131,7 @@ class GenericDataTests(object):
                 assert_equal("1987", second_obs.time)
 
 
-    @istest
+    #~ @istest
     def whitespace_is_stripped_before_looking_up_time_code(self):
         with testing.open("time-code-list-whitespace.sdmx.xml", "rb") as dataset_file:
             with testing.open("time-code-list.dsd.xml", "rb") as dsd_file:
@@ -144,7 +144,7 @@ class GenericDataTests(object):
                 assert_equal("1987", second_obs.time)
 
 
-    @istest
+    #~ @istest
     def value_error_is_raised_if_observation_time_uses_code_and_language_is_not_specified(self):
         with testing.open("time-code-list.sdmx.xml", "rb") as dataset_file:
             with testing.open("time-code-list.dsd.xml", "rb") as dsd_file:
@@ -158,7 +158,7 @@ class GenericDataTests(object):
                     assert_equal("Observation time uses code list, but language is not specified", str(error))
 
 
-    @istest
+    #~ @istest
     def key_values_can_be_read_from_group(self):
         with testing.open("groups.sdmx.xml", "rb") as dataset_file:
             with testing.open("groups.dsd.xml", "rb") as dsd_file:
