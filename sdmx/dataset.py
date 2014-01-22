@@ -7,7 +7,8 @@ except ImportError:
 
 from .xmlcommon import parse_xml, XmlNode, parse_xml_lazy
 from . import dsd
-    
+from .iteration import EagerIteration, LazyIteration
+
 
 class DsdFetcher(object):
     def __init__(self, requests):
@@ -35,6 +36,11 @@ class Observation(object):
 
 
 def data_message_reader(parser, fileobj, lazy=None, requests=None, dsd_fileobj=None):
+    if lazy:
+        iteration = LazyIteration
+    else:
+        iteration = EagerIteration
+    
     if dsd_fileobj is None:
         default_dsd_reader = None
     else:
@@ -46,7 +52,7 @@ def data_message_reader(parser, fileobj, lazy=None, requests=None, dsd_fileobj=N
             self._dsd_fetcher = dsd_fetcher
         
         def datasets(self):
-            return itertools.imap(
+            return iteration.map(
                 self._read_dataset_element,
                 parser.get_dataset_elements(self._root),
             )
@@ -77,7 +83,7 @@ def data_message_reader(parser, fileobj, lazy=None, requests=None, dsd_fileobj=N
             return self._key_family
         
         def series(self):
-            return itertools.imap(
+            return iteration.map(
                 lambda args: self._read_series_element(self._key_family, *args),
                 parser.get_series_elements(self._element),
             )

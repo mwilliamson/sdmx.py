@@ -8,6 +8,8 @@ except ImportError:
     from xml.etree.cElementTree import parse as parse_xml
 
 
+from .iteration import EagerIteration, LazyIteration
+
 __all__ = ["parse_xml", "inner_text", "XmlNode"]
 
 
@@ -26,6 +28,9 @@ class DomStream(object):
     
     def __iter__(self):
         return self
+
+    def __next__(self):
+        return self.next()
     
     def next(self):
         event, node = next(self._stream)
@@ -42,7 +47,7 @@ class StreamingXmlNode(object):
         self._node = node
         
     def map_nodes(self, path, func):
-        return itertools.imap(func, self.findall(path))
+        return LazyIteration.map(func, self.findall(path))
     
     def find(self, path):
         try:
@@ -105,7 +110,7 @@ class XmlNode(object):
         self._node = node
         
     def map_nodes(self, path, func):
-        return map(func, self.findall(path))
+        return EagerIteration.map(func, self.findall(path))
     
     def find(self, path):
         child = self._node.find(_path_to_xpath(path))

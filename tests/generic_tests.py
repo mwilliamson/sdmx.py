@@ -18,7 +18,7 @@ class GenericDataTests(object):
         </DataSet>
     </message:MessageGroup>""")
         dataset_reader = self._reader(dataset_file)
-        dataset = next(dataset_reader.datasets())
+        dataset = _only(dataset_reader.datasets())
         
         assert_equal("2012 A) OECD: Estimate of support to agriculture", dataset.key_family().name("en"))
         assert_equal(["Country", "Indicator"], dataset.key_family().describe_dimensions("en"))
@@ -33,7 +33,7 @@ class GenericDataTests(object):
         </message:DataSet>
     </message:genericData>""")
         dataset_reader = self._reader(dataset_file)
-        dataset = next(dataset_reader.datasets())
+        dataset = _only(dataset_reader.datasets())
         
         assert_equal("2012 A) OECD: Estimate of support to agriculture", dataset.key_family().name("en"))
         assert_equal(["Country", "Indicator"], dataset.key_family().describe_dimensions("en"))
@@ -54,8 +54,8 @@ class GenericDataTests(object):
         </DataSet>
     </message:MessageGroup>""")
         dataset_reader = self._reader(dataset_file)
-        dataset = next(dataset_reader.datasets())
-        series = next(dataset.series())
+        dataset = _only(dataset_reader.datasets())
+        series = _only(dataset.series())
         
         assert_equal(
             [("Country", ["OECD(EUR million)"]), ("Indicator", ["Total value of production (at farm gate)"])],
@@ -78,8 +78,8 @@ class GenericDataTests(object):
         </DataSet>
     </message:MessageGroup>""")
         dataset_reader = self._reader(dataset_file)
-        dataset = next(dataset_reader.datasets())
-        series = next(dataset.series())
+        dataset = _only(dataset_reader.datasets())
+        series = _only(dataset.series())
         
         assert_equal(
             [
@@ -107,8 +107,8 @@ class GenericDataTests(object):
         </DataSet>
     </message:MessageGroup>""")
         dataset_reader = self._reader(dataset_file)
-        dataset = next(dataset_reader.datasets())
-        series = next(dataset.series())
+        dataset = _only(dataset_reader.datasets())
+        series = _only(dataset.series())
         observations = iter(series.observations())
         first_obs = next(observations)
         second_obs = next(observations)
@@ -125,8 +125,8 @@ class GenericDataTests(object):
         with testing.open("time-code-list.sdmx.xml", "rb") as dataset_file:
             with testing.open("time-code-list.dsd.xml", "rb") as dsd_file:
                 dataset_reader = self._message_reader(dataset_file, dsd_fileobj=dsd_file)
-                dataset = next(dataset_reader.datasets())
-                series = next(dataset.series())
+                dataset = _only(dataset_reader.datasets())
+                series = _only(dataset.series())
                 first_obs, second_obs = series.observations(lang="en")
                 
                 assert_equal("1986", first_obs.time)
@@ -138,8 +138,8 @@ class GenericDataTests(object):
         with testing.open("time-code-list-whitespace.sdmx.xml", "rb") as dataset_file:
             with testing.open("time-code-list.dsd.xml", "rb") as dsd_file:
                 dataset_reader = self._message_reader(dataset_file, dsd_fileobj=dsd_file)
-                dataset = next(dataset_reader.datasets())
-                series = next(dataset.series())
+                dataset = _only(dataset_reader.datasets())
+                series = _only(dataset.series())
                 first_obs, second_obs = series.observations(lang="en")
                 
                 assert_equal("1986", first_obs.time)
@@ -151,8 +151,8 @@ class GenericDataTests(object):
         with testing.open("time-code-list.sdmx.xml", "rb") as dataset_file:
             with testing.open("time-code-list.dsd.xml", "rb") as dsd_file:
                 dataset_reader = self._message_reader(dataset_file, dsd_fileobj=dsd_file)
-                dataset = next(dataset_reader.datasets())
-                series = next(dataset.series())
+                dataset = _only(dataset_reader.datasets())
+                series = _only(dataset.series())
                 try:
                     series.observations()
                     assert False, "Expected ValueError"
@@ -165,8 +165,8 @@ class GenericDataTests(object):
         with testing.open("groups.sdmx.xml", "rb") as dataset_file:
             with testing.open("groups.dsd.xml", "rb") as dsd_file:
                 dataset_reader = self._message_reader(dataset_file, dsd_fileobj=dsd_file)
-                dataset = next(dataset_reader.datasets())
-                series = next(dataset.series())
+                dataset = _only(dataset_reader.datasets())
+                series = _only(dataset.series())
                 
                 assert_equal(
                     [
@@ -243,3 +243,10 @@ def _dsd_chunks():
             yield buf
         else:
             return
+
+def _only(iterable):
+    if hasattr(iterable, "next") or hasattr(iterable, "__next__"):
+        return next(iterable)
+    else:
+        value, = iterable
+        return value
