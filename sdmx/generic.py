@@ -47,9 +47,6 @@ class GenericDataMessageParser(object):
         return key_families[ref]
     
     def get_series_elements(self, dataset_element):
-        return list(self._get_series_elements_generator(dataset_element))
-    
-    def _get_series_elements_generator(self, dataset_element):
         for child in dataset_element.children():
             name = child.qualified_name()
             if name == xml.qualified_name(GenericElementTypes.Group):
@@ -85,8 +82,10 @@ class GenericDataMessageParser(object):
         
     def _read_obs_element(self, obs_element):
         time_element = obs_element.find(xml.path(GenericElementTypes.Time))
+        time = time_element.inner_text()
         value_element = obs_element.find(xml.path(GenericElementTypes.ObsValue))
-        return Observation(time_element.inner_text(), value_element.get("value"))
+        value = value_element.get("value")
+        return Observation(time, value)
 
 
 generic_data_message_reader = functools.partial(data_message_reader, GenericDataMessageParser())

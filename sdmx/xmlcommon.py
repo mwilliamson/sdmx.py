@@ -1,5 +1,6 @@
 import re
 from xml.dom import pulldom
+import itertools
 
 try:
     from lxml.etree import parse as parse_xml
@@ -39,17 +40,28 @@ class StreamingXmlNode(object):
     def __init__(self, stream, node):
         self._stream = stream
         self._node = node
+        
+    def map_nodes(self, path, func):
+        return itertools.imap(func, self.findall(path))
     
     def find(self, path):
-        return next(self.findall(path))
+        try:
+            return next(self.findall(path))
+        except StopIteration:
+            return None
     
     def findall(self, path):
         part, = path
         # TODO: what if we skipped elements that we actually care about e.g. observations before a key?
+        for child in self.children():
+            if child._name_tuple() == part:
+                yield child
+    
+    def children(self):
         original_depth = self._stream.depth
         while self._stream.depth >= original_depth:
             event, node = next(self._stream)
-            if self._stream.depth == original_depth + 1 and event == pulldom.START_ELEMENT and (node.namespaceURI, node.localName) == part:
+            if self._stream.depth == original_depth + 1 and event == pulldom.START_ELEMENT:
                 yield StreamingXmlNode(self._stream, node)
     
     def get(self, name):
@@ -57,15 +69,22 @@ class StreamingXmlNode(object):
     
     def inner_text(self):
         text = []
-        original_depth = self._stream.depth
-        while self._stream.depth >= original_depth:
-            event, node = next(self._stream)
+        for event, node in self._stream_at_current_depth():
             if event == pulldom.CHARACTERS:
                 text.append(node.nodeValue)
         return "".join(text)
     
     def qualified_name(self):
-        return qualified_name((self._node.namespaceURI, self._node.localName))
+        return qualified_name(self._name_tuple())
+    
+    def _name_tuple(self):
+        return self._node.namespaceURI, self._node.localName
+    
+    def _stream_at_current_depth(self):
+        original_depth = self._stream.depth
+        while self._stream.depth >= original_depth:
+            yield next(self._stream)
+        
 
 
 def path(*parts):

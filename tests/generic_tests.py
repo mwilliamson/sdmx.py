@@ -18,7 +18,7 @@ class GenericDataTests(object):
         </DataSet>
     </message:MessageGroup>""")
         dataset_reader = self._reader(dataset_file)
-        dataset, = dataset_reader.datasets()
+        dataset = next(dataset_reader.datasets())
         
         assert_equal("2012 A) OECD: Estimate of support to agriculture", dataset.key_family().name("en"))
         assert_equal(["Country", "Indicator"], dataset.key_family().describe_dimensions("en"))
@@ -33,13 +33,13 @@ class GenericDataTests(object):
         </message:DataSet>
     </message:genericData>""")
         dataset_reader = self._reader(dataset_file)
-        dataset, = dataset_reader.datasets()
+        dataset = next(dataset_reader.datasets())
         
         assert_equal("2012 A) OECD: Estimate of support to agriculture", dataset.key_family().name("en"))
         assert_equal(["Country", "Indicator"], dataset.key_family().describe_dimensions("en"))
 
 
-    #~ @istest
+    @istest
     def series_key_is_read_using_dsd_concepts_and_code_lists(self):
         dataset_file = io.BytesIO(
         b"""<message:MessageGroup xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic" xmlns:common="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/common" xsi:schemaLocation="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic http://www.sdmx.org/docs/2_0/SDMXGenericData.xsd http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message http://www.sdmx.org/docs/2_0/SDMXMessage.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:message="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message">
@@ -54,8 +54,8 @@ class GenericDataTests(object):
         </DataSet>
     </message:MessageGroup>""")
         dataset_reader = self._reader(dataset_file)
-        dataset, = dataset_reader.datasets()
-        series, = dataset.series()
+        dataset = next(dataset_reader.datasets())
+        series = next(dataset.series())
         
         assert_equal(
             [("Country", ["OECD(EUR million)"]), ("Indicator", ["Total value of production (at farm gate)"])],
@@ -63,7 +63,7 @@ class GenericDataTests(object):
         )
 
 
-    #~ @istest
+    @istest
     def key_description_includes_description_of_parent_concepts(self):
         dataset_file = io.BytesIO(
         b"""<message:MessageGroup xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic" xmlns:common="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/common" xsi:schemaLocation="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic http://www.sdmx.org/docs/2_0/SDMXGenericData.xsd http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message http://www.sdmx.org/docs/2_0/SDMXMessage.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:message="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message">
@@ -78,8 +78,8 @@ class GenericDataTests(object):
         </DataSet>
     </message:MessageGroup>""")
         dataset_reader = self._reader(dataset_file)
-        dataset, = dataset_reader.datasets()
-        series, = dataset.series()
+        dataset = next(dataset_reader.datasets())
+        series = next(dataset.series())
         
         assert_equal(
             [
@@ -90,7 +90,7 @@ class GenericDataTests(object):
         )
 
 
-    #~ @istest
+    @istest
     def observations_have_time_and_value(self):
         dataset_file = io.BytesIO(
         b"""<message:MessageGroup xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic" xmlns:common="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/common" xsi:schemaLocation="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/generic http://www.sdmx.org/docs/2_0/SDMXGenericData.xsd http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message http://www.sdmx.org/docs/2_0/SDMXMessage.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:message="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message">
@@ -107,9 +107,11 @@ class GenericDataTests(object):
         </DataSet>
     </message:MessageGroup>""")
         dataset_reader = self._reader(dataset_file)
-        dataset, = dataset_reader.datasets()
-        series, = dataset.series()
-        first_obs, second_obs = series.observations()
+        dataset = next(dataset_reader.datasets())
+        series = next(dataset.series())
+        observations = iter(series.observations())
+        first_obs = next(observations)
+        second_obs = next(observations)
         
         assert_equal("1986", first_obs.time)
         assert_equal("538954.220075479", first_obs.value)
