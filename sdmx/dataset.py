@@ -1,4 +1,5 @@
 import io
+import itertools
 try:
     from collections import OrderedDict
 except ImportError:
@@ -45,7 +46,7 @@ def data_message_reader(parser, fileobj, requests=None, dsd_fileobj=None):
             self._dsd_fetcher = dsd_fetcher
         
         def datasets(self):
-            return map(
+            return itertools.imap(
                 self._read_dataset_element,
                 parser.get_dataset_elements(self._tree),
             )
@@ -76,7 +77,7 @@ def data_message_reader(parser, fileobj, requests=None, dsd_fileobj=None):
             return self._key_family
         
         def series(self):
-            return map(
+            return itertools.imap(
                 lambda args: self._read_series_element(self._key_family, *args),
                 parser.get_series_elements(self._element),
             )
