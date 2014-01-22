@@ -1,4 +1,5 @@
 import functools
+import itertools
 
 from .dataset import data_message_reader, Observation
 from . import xmlcommon as xml
@@ -30,8 +31,8 @@ class GenericElementTypes(object):
 
 class GenericDataMessageParser(object):
     def get_dataset_elements(self, message_element):
-        return (
-            message_element.findall(xml.path(GenericElementTypes.DataSet)) +
+        return itertools.chain(
+            message_element.findall(xml.path(GenericElementTypes.DataSet)),
             message_element.findall(xml.path(MessageElementTypes.DataSet))
         )
         
