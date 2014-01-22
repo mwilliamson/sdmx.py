@@ -160,10 +160,10 @@ def data_message_reader(parser, fileobj, lazy=None, requests=None, dsd_fileobj=N
                         code, = codes
                         return code
                 
-                return [
+                return (
                     Observation(time=describe_time_code(observation.time), value=observation.value)
                     for observation in observations
-                ]
+                )
             else:
                 return observations
 

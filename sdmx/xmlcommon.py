@@ -65,7 +65,10 @@ class StreamingXmlNode(object):
                 yield StreamingXmlNode(self._stream, node)
     
     def get(self, name):
-        return self._node.getAttribute(name)
+        if self._node.hasAttribute(name):
+            return self._node.getAttribute(name)
+        else:
+            return None
     
     def inner_text(self):
         text = []
