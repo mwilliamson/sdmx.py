@@ -39,7 +39,7 @@ def data_message_reader(parser, fileobj, requests=None, dsd_fileobj=None):
     else:
         default_dsd_reader = dsd.reader(fileobj=dsd_fileobj)
     
-    class DatasetsReader(object):
+    class MessageReader(object):
         def __init__(self, tree, dsd_fetcher):
             self._tree = tree
             self._dsd_fetcher = dsd_fetcher
@@ -166,4 +166,4 @@ def data_message_reader(parser, fileobj, requests=None, dsd_fileobj=None):
 
     tree = XmlNode(parse_xml(fileobj).getroot())
     dsd_fetcher = DsdFetcher(requests)
-    return DatasetsReader(tree, dsd_fetcher=dsd_fetcher)
+    return MessageReader(tree, dsd_fetcher=dsd_fetcher)
