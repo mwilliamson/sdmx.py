@@ -1,4 +1,5 @@
 import functools
+from xml.dom import pulldom
 
 from .dataset import data_message_reader, Observation
 
@@ -26,16 +27,39 @@ class GenericElementTypes(object):
     ObsValue = _expand("ObsValue")
 
 
+def _seek_event_stream(stream, desired_event, ignore):
+    while True:
+        event, node = next(stream)
+        if event == desired_event:
+            return event, node
+        elif not event in ignore:
+            raise ValueError("Event {0} before desired event {1}".format(event, desired_event))
+
+def _read_inner_text(stream):
+    text = []
+    level = 1
+    while level > 0:
+        event, node = next(stream)
+        if event == pulldom.START_ELEMENT:
+            level += 1
+        elif event == pulldom.END_ELEMENT:
+            level -= 1
+        elif event == pulldom.CHARACTERS:
+            text.append(node.nodeValue)
+    
+    return "".join(text)
+
+
 class GenericDataMessageParser(object):
-    def get_dataset_elements(self, message_element):
-        return (
-            message_element.findall(GenericElementTypes.DataSet) +
-            message_element.findall(MessageElementTypes.DataSet)
-        )
+    def is_dataset_element(self, element):
+        # TODO: check namespace
+        return element.localName == "DataSet"
         
-    def key_family_for_dataset(self, dataset_element, dsd_reader):
-        key_family_ref_element = dataset_element.find(GenericElementTypes.KeyFamilyRef)
-        ref = key_family_ref_element.inner_text().strip()
+    def key_family_for_dataset(self, event_stream, dataset_node, dsd_reader):
+        event, node = _seek_event_stream(event_stream, pulldom.START_ELEMENT, [pulldom.CHARACTERS])
+        # TODO: check namespace
+        assert node.localName == "KeyFamilyRef"
+        ref = _read_inner_text(event_stream).strip()
         key_families = dict(
             (key_family.id, key_family)
             for key_family in dsd_reader.key_families()
