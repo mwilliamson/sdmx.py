@@ -51,33 +51,35 @@ def data_message_reader(parser, fileobj, requests=None, dsd_fileobj=None):
             )
             
         def _read_dataset_element(self, element):
-            return DatasetReader(element, self._dsd_fetcher)
-
-    class DatasetReader(object):
-        def __init__(self, element, dsd_fetcher):
-            self._element = element
-            self._dsd_fetcher = dsd_fetcher
+            return DatasetReader(element, self._key_family(element))
         
-        def key_family(self):
-            dsd_reader = self._dsd_reader()
+        def _key_family(self, dataset_element):
+            dsd_reader = self._dsd_reader(dataset_element)
             return KeyFamily(
-                parser.key_family_for_dataset(self._element, dsd_reader),
+                parser.key_family_for_dataset(dataset_element, dsd_reader),
                 dsd_reader,
             )
-        
-        def series(self):
-            key_family = self.key_family()
-            return map(
-                lambda args: self._read_series_element(key_family, *args),
-                parser.get_series_elements(self._element),
-            )
             
-        def _dsd_reader(self):
-            key_family_uri = self._element.get("keyFamilyURI")
+        def _dsd_reader(self, dataset_element):
+            key_family_uri = dataset_element.get("keyFamilyURI")
             if key_family_uri is None:
                 return default_dsd_reader
             else:
                 return self._dsd_fetcher.fetch(key_family_uri)
+
+    class DatasetReader(object):
+        def __init__(self, element, key_family):
+            self._element = element
+            self._key_family = key_family
+        
+        def key_family(self):
+            return self._key_family
+        
+        def series(self):
+            return map(
+                lambda args: self._read_series_element(self._key_family, *args),
+                parser.get_series_elements(self._element),
+            )
         
         def _read_series_element(self, key_family, element, key):
             return SeriesReader(key_family, element, key)
