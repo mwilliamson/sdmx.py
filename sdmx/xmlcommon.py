@@ -1,10 +1,11 @@
 import re
 from xml.dom import pulldom
 import itertools
+import sys
 
-try:
+if sys.version_info[:2] < (2, 7):
     from lxml.etree import parse as parse_xml
-except ImportError:
+else:
     from xml.etree.cElementTree import parse as parse_xml
 
 
