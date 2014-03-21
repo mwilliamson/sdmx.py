@@ -75,3 +75,56 @@ An `Observation` has the following attributes:
 * `time`
 * `value`
 
+## Example
+
+The script below can be used to print out the values contained in a generic data message.
+(If you have a compact data message,
+then using `compact_data_message_reader` instead of `generic_data_message_reader` should also work.)
+Assuming the script is saved as `read-sdmx-values.py",
+it can be used like so:
+
+    python read-sdmx-values.py path/to/generic-data-message.xml path/to/dsd.xml
+    
+```python
+import sys
+
+import sdmx
+
+
+def main():
+    dataset_path = sys.argv[1]
+    dsd_path = sys.argv[2]
+    
+    with open(dataset_path) as dataset_fileobj:
+        with open(dsd_path) as dsd_fileobj:
+            dataset_reader = sdmx.generic_data_message_reader(
+                fileobj=dataset_fileobj,
+                dsd_fileobj=dsd_fileobj,
+            )
+            _print_values(dataset_reader)
+
+
+def _print_values(dataset_reader):
+    for dataset in dataset_reader.datasets():
+        key_family = dataset.key_family()
+        name = key_family.name(lang="en")
+        
+        print name
+        
+        dimension_names = key_family.describe_dimensions(lang="en") + ["Time", "Value"]
+        
+        for series in dataset.series():
+            row_template = []
+            key = series.describe_key(lang="en")
+            for key_name, key_value in key.iteritems():
+                row_template.append(key_value)
+            
+            for observation in series.observations(lang="en"):
+                row = row_template[:]
+                row.append(observation.time)
+                row.append(observation.value)
+                
+                print zip(dimension_names, row)
+
+main()
+```
