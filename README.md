@@ -11,15 +11,26 @@ Contributions welcome.
 
 ## Usage
 
-### `sdmx.generic_data_message_reader(fileobj)`
+### `sdmx.generic_data_message_reader(fileobj, dsd_fileobj=None, lazy=None)`
 
 Given a file-like object representing the XML of a generic data message,
 return a data message reader.
 
-### `sdmx.compact_data_message_reader(fileobj)`
+### `sdmx.compact_data_message_reader(fileobj, dsd_fileobj=None, lazy=None)`
 
 Given a file-like object representing the XML of a compact data message,
 return a data message reader.
+
+### Optional arguments for data message readers
+
+* `dsd_fileobj`: the file-like object representing the XML of the relevant DSD.
+  Only used if the data message does not contain a URL to the relevant DSD.
+  
+* `lazy`: set to `True` to read observations lazily to allow datasets to be read without loading the entire dataset into memory.
+  Use with caution: lazy reading makes some assumptions about the structure of the XML
+  (for instance, that series keys always appear before any observations in that series).
+  These assumptions seem to be safe on files that I've tested,
+  but that doesn't mean they're universally true.
 
 ### Data message readers
 
