@@ -91,7 +91,7 @@ An `Observation` has the following attributes:
 The script below can be used to print out the values contained in a generic data message.
 (If you have a compact data message,
 then using `compact_data_message_reader` instead of `generic_data_message_reader` should also work.)
-Assuming the script is saved as `read-sdmx-values.py",
+Assuming the script is saved as `read-sdmx-values.py`,
 it can be used like so:
 
     python read-sdmx-values.py path/to/generic-data-message.xml path/to/dsd.xml
