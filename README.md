@@ -69,6 +69,7 @@ A `Series` has the following attributes:
   For instance, if the dataset has a dimension named `Country`,
   the value for the series might be `United Kingdom`.
   Returns an ordered dictionary mapping strings to lists of strings.
+  The items in the dictionary are in the same order as the dimensions returned from `describe_dimensions()`.
   For instance, if the dataset has a single dimension called `Country`,
   the returned value would be `{"Country": ["United Kingdom"]}`.
   All ancestors of a value are also described, with ancestors appearing before descendents.
