@@ -1,6 +1,7 @@
 import collections
 
 from .xmlcommon import inner_text, parse_xml
+from .iteration import EagerIteration
 
 
 def reader(fileobj):
@@ -75,14 +76,14 @@ class DsdReader(object):
     
     def concepts(self):
         concept_elements = self._tree.findall(self._concept_path)
-        return map(self._read_concept_element, concept_elements)
+        return EagerIteration.map(self._read_concept_element, concept_elements)
     
     def _read_concept_element(self, concept_element):
         return Concept(concept_element.get("id"), _read_names(concept_element))
     
     def code_lists(self):
         elements = self._tree.findall(self._code_list_path)
-        return map(self._read_code_list_element, elements)
+        return EagerIteration.map(self._read_code_list_element, elements)
     
     def _read_code_list_element(self, element):
         return CodeList(element.get("id"), _read_names(element), _read_codes(element))
@@ -93,7 +94,7 @@ class DsdReader(object):
             "{http://www.SDMX.org/resources/SDMXML/schemas/v2_0/structure}KeyFamily",
         ]
         elements = self._tree.findall("/".join(path))
-        return map(self._read_key_family_element, elements)
+        return EagerIteration.map(self._read_key_family_element, elements)
     
     def _read_key_family_element(self, element):
         return KeyFamily(
