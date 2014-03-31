@@ -18,7 +18,7 @@ setup(
     name='sdmx',
     version='0.2.8',
     description='Read SDMX XML files',
-    long_description=read("README"),
+    long_description=read("README.rst"),
     author='Michael Williamson',
     author_email='mike@zwobble.org',
     url='http://github.com/mwilliamson/sdmx.py',
