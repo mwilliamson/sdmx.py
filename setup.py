@@ -16,7 +16,7 @@ if sys.version_info[:2] < (2, 7):
 
 setup(
     name='sdmx',
-    version='0.2.9',
+    version='0.2.10',
     description='Read SDMX XML files',
     long_description=read("README.rst"),
     author='Michael Williamson',
