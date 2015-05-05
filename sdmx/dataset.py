@@ -41,6 +41,9 @@ def data_message_reader(parser, fileobj, lazy=None, requests=None, dsd_fileobj=N
     else:
         iteration = EagerIteration
     
+    if requests is None:
+        import requests
+    
     if dsd_fileobj is None:
         default_dsd_reader = None
     else:
