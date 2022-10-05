@@ -108,7 +108,7 @@ class DsdReader(object):
     def _read_dimensions(self, element):
         path = self._dimension_path("Dimension")
         elements = element.findall(path)
-        return map(self._read_dimension_element, elements)
+        return list(map(self._read_dimension_element, elements))
 
     def _read_time_dimension(self, element):
         path = self._dimension_path("TimeDimension")
